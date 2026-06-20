@@ -1,14 +1,14 @@
 resource "aws_db_instance" "myapp_db" {
-  allocated_storage    = 10
-  db_name              = "myapp"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t3.micro"
-  username             = "myapp_user"
-  password             = "myapp_passwd"
-  parameter_group_name = "default.mysql8.0"
+  allocated_storage      = 10
+  db_name                = "myapp"
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t3.micro"
+  username               = "myapp_user"
+  password               = "myapp_passwd"
+  parameter_group_name   = "default.mysql8.0"
   vpc_security_group_ids = [aws_security_group.posweb_mydb_2026_sg.id]
-  skip_final_snapshot  = true
+  skip_final_snapshot    = true
 }
 
 resource "aws_security_group" "posweb_mydb_2026_sg" {

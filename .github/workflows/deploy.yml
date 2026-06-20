@@ -1,5 +1,6 @@
 name: Deploy MyAPP
-run-name: ${{ github.actor }} is deploying MyAPP 🚀
+run-name: ${{ github.actor }} is deploying MyAPP
+
 on:
   push:
     branches:
@@ -30,6 +31,31 @@ jobs:
           target: "/home/ubuntu/myapp/"
           strip_components: 1
 
+      - name: Restart BackEnd service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo tee /etc/systemd/system/myapp.service > /dev/null <<'SERVICE'
+            [Unit]
+            Description=POSWEB 2026 Flask API
+            After=network.target
+
+            [Service]
+            User=ubuntu
+            WorkingDirectory=/home/ubuntu/myapp
+            ExecStart=/home/ubuntu/myapp/bin/python /home/ubuntu/myapp/myapi.py
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+            SERVICE
+            sudo systemctl daemon-reload
+            sudo systemctl enable myapp
+            sudo systemctl restart myapp
+
       - name: Config FrontEnd file
         run: |
           sed -i 's/_API_ADDRESS_/${{ secrets.HOST }}/g' frontend/index.html
@@ -43,3 +69,12 @@ jobs:
           source: "frontend/index.html"
           target: "/var/www/html/"
           strip_components: 1
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo systemctl reload nginx

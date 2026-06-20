@@ -15,7 +15,7 @@ apt -y install \
     default-libmysqlclient-dev \
     nginx
 
-mkdir /home/ubuntu/myapp
+mkdir -p /home/ubuntu/myapp
 cd /home/ubuntu/myapp
 python3 -m venv .
 source ./bin/activate
@@ -23,3 +23,5 @@ pip install \
     flask \
     flask-mysqldb \
     flask-cors
+
+chown -R ubuntu:ubuntu /home/ubuntu/myapp /var/www/html
